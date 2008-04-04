@@ -1,0 +1,41 @@
+== JavaScript MOP Utilities
+
+Defines some utilities for JavaScript metaprogramming:
+
+  MOP.delegate(target, propertyName, methods)
+    For each name in `methods`, defines a method on `target` with this
+    name, that delegates to the method of the `propertyName` property
+    of `target` with the same name.
+
+And these for asynchronous programming:
+  MOP.withMethodOverridesCallback(object, methods, fn)
+    Calls `fn` on `object`, within a dynamic scope within which the
+    methods in `methods` have temporarily replaced the like-named
+    methods on `object`.  The scope is terminated by the argument to
+    the call to `fn`; this argument should be treated as a
+    continuation, and restores the methods.
+
+  MOP.withDeferredMethods(object, methodNames, fn)
+    Calls `fn` on `object`, within a dynamic scope within which the
+    methods in `methodNames` have been enqueued.  The scope is
+    terminated by the argument to the call to `fn`; this argument
+    should be treated as a continuation, and ends the queue, replaying
+    the methods.
+
+  new MOP.MethodReplacer(object, methods)
+    When a new MethodReplacer is constructed, it replaces each method
+    on `object` by the method in `methods` with the same key value, if
+    such a method exists.  A MethodReplacer has a single method,
+    `restoreMethods`, which restores each method to its
+    pre-replacement value.
+
+  new MOP.QueueBall(object, methodNames)
+    When a new QueueBall is constructed, it replaces each method named
+    by `methodNames` with a method that enqueues the method call (the
+    name of the method and its arguments).  A QueueBall has a single
+    method, `replayMethodCalls`, which plays back the method calls and
+    restores the methods.
+
+== License
+
+Copyright 2007-2008 by Oliver Steele.  Available under the MIT License.

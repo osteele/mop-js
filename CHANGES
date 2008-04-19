@@ -1,0 +1,6 @@
+= MOP JS Changes
+
+== 2008-04-18
+* Moved MOP.delegate -> MOP.{Class,Object}.delegate
+* Added MOP.{Class,Object}.define.{accessor,getter}
+* Added MOP.{Class,Object}.method.{guardBy,guardUntil,trace,time}

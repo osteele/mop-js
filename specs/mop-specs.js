@@ -2,17 +2,17 @@ describe('MOP.delegate', {
     'should delegate to the named field': function() {
         var captures = [];
         var delegatee = {f: function(x) {captures.push(x); return 2}};
-        var delegator = {d: delegatee};
-        MOP.delegate(delegator, 'd', ['f']);
-        value_of(delegator.f(1)).should_be(2);
+        var object = {d: delegatee};
+        MOP.Object(object).delegate('d', ['f']);
+        value_of(object.f(1)).should_be(2);
         value_of(captures.join(',')).should_be('1');
     },
     'should leave other methods alone': function() {
         var captures = [];
         var delegatee = {f: function(x) {captures.push(x); return 2}};
-        var delegator = {d: delegatee, g: function(x) {return 3}};
-        MOP.delegate(delegator, 'd', ['f']);
-        value_of(delegator.g(1)).should_be(3);
+        var object = {d: delegatee, g: function(x) {return 3}};
+        MOP.Object(object).delegate('d', ['f']);
+        value_of(object.g(1)).should_be(3);
         value_of(captures.join(',')).should_be('');
     },
     'should work on classes': function() {
@@ -21,10 +21,45 @@ describe('MOP.delegate', {
         function Delegator(delegatee) {
             this.d = delegatee;
         }
-        MOP.delegate(Delegator.prototype, 'd', ['f']);
-        var delegator = new Delegator(delegatee);
-        value_of(delegator.f(1)).should_be(2);
+        MOP.Class(Delegator).delegate('d', ['f']);
+        var object = new Delegator(delegatee);
+        value_of(object.f(1)).should_be(2);
         value_of(captures.join(',')).should_be('1');
+    }
+});
+
+describe('MOP.define', {
+    'should define accessors': function() {
+        var object = {};
+        MOP.Object(object).define.accessor('name');
+        object.setName(1);
+        value_of(object.name).should_be(1);
+        value_of(object.getName()).should_be(1);
+    },
+    'should define getters': function() {
+        var object = {name:1};
+        MOP.Object(object).define.getter('name');
+        value_of(object.setName).should_be(undefined);
+        value_of(object.getName()).should_be(1);
+    },
+    'should apply to classes': function() {
+        function Klass() {};
+        MOP.Class(Klass).define.accessor('name');
+        var object = new Klass;
+        object.setName(1);
+        value_of(object.name).should_be(1);
+        value_of(object.getName()).should_be(1);
+    },
+});
+
+describe('MOP.method', {
+    'should define guardBy': function() {
+        var object = {f: function() { return 1 }};
+        var guarded = true;
+        MOP.Object(object).method('f').guardBy(function() { return !guarded });
+        value_of(object.f()).should_be(false);
+        guarded = false;
+        value_of(object.f()).should_be(1);
     }
 });
 
